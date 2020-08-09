@@ -1,0 +1,78 @@
+{
+	"info": {
+		"_postman_id": "0d6ed305-ec00-4010-baf6-b786fa34afcc",
+		"name": "AWS_MTC_2020",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "get_product",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "oNe7C26qHO1BAaUCYwxWf4d1YAIwTJmK3PE6knZm",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://9x38ag4qf1.execute-api.us-west-2.amazonaws.com/v1/products/3",
+					"protocol": "https",
+					"host": [
+						"9x38ag4qf1",
+						"execute-api",
+						"us-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"v1",
+						"products",
+						"3"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "create_product",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "oNe7C26qHO1BAaUCYwxWf4d1YAIwTJmK3PE6knZm",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"id\": \"ab\",\n    \"name\": \"MacBook\",\n    \"code\": \"COD7\",\n    \"model\": \"Model7\",\n    \"price\": 700.0\n  }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://9x38ag4qf1.execute-api.us-west-2.amazonaws.com/v1/products",
+					"protocol": "https",
+					"host": [
+						"9x38ag4qf1",
+						"execute-api",
+						"us-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"v1",
+						"products"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"protocolProfileBehavior": {}
+}
