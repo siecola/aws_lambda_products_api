@@ -8,10 +8,12 @@ import com.amazonaws.services.dynamodbv2.document.DynamoDB;
 import com.amazonaws.services.dynamodbv2.document.Item;
 import com.amazonaws.services.dynamodbv2.document.spec.PutItemSpec;
 import com.amazonaws.services.lambda.runtime.Context;
+import com.amazonaws.services.lambda.runtime.LambdaLogger;
 import com.amazonaws.services.lambda.runtime.RequestStreamHandler;
 import com.amazonaws.services.sqs.AmazonSQS;
 import com.amazonaws.services.sqs.AmazonSQSClientBuilder;
 import com.amazonaws.services.sqs.model.SendMessageRequest;
+import com.amazonaws.services.sqs.model.SendMessageResult;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -27,6 +29,7 @@ public class ProductsHandler implements RequestStreamHandler {
             OutputStream outputStream,
             Context context)
             throws IOException {
+        LambdaLogger logger = context.getLogger();
 
         JSONParser parser = new JSONParser();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -48,7 +51,10 @@ public class ProductsHandler implements RequestStreamHandler {
                                 .withString("model", product.getModel())
                                 .withDouble("price", product.getPrice())
                         ));
-                this.sendProductEvent(product, "CREATED");
+                logger.log("Product created - productId: " +
+                        product.getId() + " - code: " + product.getCode());
+
+                this.sendProductEvent(product, "CREATED", logger);
             }
 
             JSONObject responseBody = new JSONObject();
@@ -74,6 +80,7 @@ public class ProductsHandler implements RequestStreamHandler {
     public void handleGetByParam(
             InputStream inputStream, OutputStream outputStream, Context context)
             throws IOException {
+        LambdaLogger logger = context.getLogger();
 
         JSONParser parser = new JSONParser();
         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
@@ -105,7 +112,10 @@ public class ProductsHandler implements RequestStreamHandler {
             if (result != null) {
                 Product product = new Product(result.toJSON());
 
-                this.sendProductEvent(product, "RETRIEVED");
+                logger.log("Product retrieved - productId: " +
+                        product.getId() + " - code: " + product.getCode());
+
+                this.sendProductEvent(product, "RETRIEVED", logger);
 
                 responseBody.put("Product", product);
                 responseJson.put("statusCode", 200);
@@ -130,7 +140,7 @@ public class ProductsHandler implements RequestStreamHandler {
         writer.close();
     }
 
-    private void sendProductEvent(Product product, String event) {
+    private void sendProductEvent(Product product, String event, LambdaLogger logger) {
         ProductEvent productEvent = new ProductEvent();
         productEvent.setCode(product.getCode());
         productEvent.setEvent(event);
@@ -141,6 +151,8 @@ public class ProductsHandler implements RequestStreamHandler {
                 .withQueueUrl("https://sqs.us-west-2.amazonaws.com/946835467386/product-events")
                 .withMessageBody(productEvent.toString());
         AmazonSQS sqs = AmazonSQSClientBuilder.defaultClient();
-        sqs.sendMessage(send_msg_request);
+        SendMessageResult sendMessageResult = sqs.sendMessage(send_msg_request);
+
+        logger.log("Product event published - messageId: " + sendMessageResult.getMessageId());
     }
 }
