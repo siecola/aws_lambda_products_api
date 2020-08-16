@@ -1,42 +1,58 @@
 {
 	"info": {
-		"_postman_id": "0d6ed305-ec00-4010-baf6-b786fa34afcc",
+		"_postman_id": "9e7efc75-aa6c-4111-a764-178ca7f8d580",
 		"name": "AWS_MTC_2020",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
 	},
 	"item": [
 		{
-			"name": "get_product",
-			"request": {
-				"method": "GET",
-				"header": [
-					{
-						"key": "x-api-key",
-						"value": "oNe7C26qHO1BAaUCYwxWf4d1YAIwTJmK3PE6knZm",
-						"type": "text"
-					}
-				],
-				"url": {
-					"raw": "https://9x38ag4qf1.execute-api.us-west-2.amazonaws.com/v1/products/3",
-					"protocol": "https",
-					"host": [
-						"9x38ag4qf1",
-						"execute-api",
-						"us-west-2",
-						"amazonaws",
-						"com"
-					],
-					"path": [
-						"v1",
-						"products",
-						"3"
-					]
-				}
-			},
-			"response": []
-		},
-		{
 			"name": "create_product",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "0be2c726-0c4d-4357-8e76-d30e5d24ecf9",
+						"exec": [
+							"var id = Math.floor(Math.random() * 100) + 1;\r",
+							"\r",
+							"var product_name = \"product_\" + Math.random().toString(36).substring(7);\r",
+							"var product_code = \"CODE_\" + Math.random().toString(36).substring(7);\r",
+							"var product_model = \"MOD_\" + Math.random().toString(36).substring(7);\r",
+							"\r",
+							"pm.environment.set(\"id\", id);\r",
+							"pm.environment.set(\"product_name\", product_name);\r",
+							"pm.environment.set(\"product_code\", product_code);\r",
+							"pm.environment.set(\"product_model\", product_model);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "06ec929b-bac5-4eac-992f-4a8b898503b5",
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"var product_id = jsonData.id;\r",
+							"\r",
+							"var id = pm.environment.get(\"id\");\r",
+							"\r",
+							"\r",
+							"pm.environment.set(\"id\", id);\r",
+							"\r",
+							"/* Tests */\r",
+							"\r",
+							"pm.test(\"Product Id: \" + id, function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
 			"request": {
 				"method": "POST",
 				"header": [
@@ -48,7 +64,7 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"id\": \"ab\",\n    \"name\": \"MacBook\",\n    \"code\": \"COD7\",\n    \"model\": \"Model7\",\n    \"price\": 700.0\n  }",
+					"raw": "{\n    \"id\": \"{{id}}\",\n    \"name\": \"{{product_name}}\",\n    \"code\": \"{{product_code}}\",\n    \"model\": \"{{product_model}}\",\n    \"price\": 700.0\n  }\n  \n",
 					"options": {
 						"raw": {
 							"language": "json"
@@ -68,6 +84,36 @@
 					"path": [
 						"v1",
 						"products"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "get_product",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "x-api-key",
+						"value": "oNe7C26qHO1BAaUCYwxWf4d1YAIwTJmK3PE6knZm",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "https://9x38ag4qf1.execute-api.us-west-2.amazonaws.com/v1/products/67",
+					"protocol": "https",
+					"host": [
+						"9x38ag4qf1",
+						"execute-api",
+						"us-west-2",
+						"amazonaws",
+						"com"
+					],
+					"path": [
+						"v1",
+						"products",
+						"67"
 					]
 				}
 			},
